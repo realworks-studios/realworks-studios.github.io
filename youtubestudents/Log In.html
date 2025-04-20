@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Students - Login</title>
+    <link rel="icon" href="E:\Tanay Shah\Websites\Edphones\Youtube Students\youtube favicon.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f9f9f9;
+            flex-direction: column;
+        }
+        .youtube-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100px;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 50px;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background: darkred;
+        }
+        .login-container button:disabled {
+            background: grey;
+            cursor: not-allowed;
+        }
+    </style>
+<script>
+    function validateLogin() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const loginButton = document.getElementById("loginButton");
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+        
+        loginButton.disabled = !(emailPattern.test(email) && password.length >= 8);
+    }
+
+    function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const users = JSON.parse(localStorage.getItem("users")) || {};
+        const user = users[email];
+
+        if (user && user.password === password) {
+            // Store current user email
+            localStorage.setItem("currentUser", email);
+            
+            alert("Login successful! Redirecting to homepage...");
+            window.location.href = "Homepage.html";
+        } else {
+            alert("No account exists with this email and password combination.");
+        }
+    }
+</script>
+</head>
+<body>
+    <img class="youtube-icon" src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube Logo">
+    <div class="login-container">
+        <h2>Login to YouTube Students</h2>
+        <input type="email" id="email" placeholder="Enter your email" oninput="validateLogin()" required>
+        <input type="password" id="password" placeholder="Enter your password" oninput="validateLogin()" required>
+        <button id="loginButton" disabled onclick="login()">Login</button>
+        <p style="margin-top: 15px;">Don't have an account? <a href="Sign Up.html">Sign Up</a></p>
+    </div>
+</body>
+</html>

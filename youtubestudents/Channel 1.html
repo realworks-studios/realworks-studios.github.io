@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3Blue1Brown</title>
+    <link rel="icon" type="image/png" href="youtube favicon.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+        }
+        .navbar {
+            background: #ffffff;
+            color: black;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            height: 56px;
+        }
+        .menu-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .youtube-logo {
+            cursor: pointer;
+        }
+        .youtube-logo img {
+            width: 120px;
+            height: auto;
+        }
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .search-bar input {
+            width: 12cm;
+            height: 1cm;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .search-bar img {
+            width: 25px;
+            height: 25px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .profile-container {
+            position: relative;
+            margin-left: 20px;
+        }
+        .profile-logo {
+            width: 40px;
+            height: 40px;
+            background: #ff0000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .profile-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .dropdown-menu p {
+            padding: 10px 20px;
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+        }
+        .dropdown-menu p:hover {
+            background: #f0f0f0;
+        }
+        .sidebar {
+            width: 250px;
+            background: #f9f9f9;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 80px 20px 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+        .sidebar p {
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .sidebar p img {
+            width: 25px;
+            height: 25px;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        .sidebar p:hover {
+            background: #ddd;
+            border-radius: 5px;
+        }
+        .sidebar p.section-header {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 24px;
+            color: #606060;
+            line-height: 1;
+        }
+        .divider {
+            height: 1px;
+            background: #ccc;
+            margin: 5px 0;
+        }
+        .content {
+            margin-left: 270px;
+            margin-top: 60px;
+            padding: 24px;
+            flex-grow: 1;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .content.sidebar-hidden {
+            margin-left: 0;
+            width: 100%;
+        }
+        .channel-banner {
+            width: 100%;
+            height: 200px;
+            background-color: #ddd;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .channel-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .channel-header {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .channel-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 16px;
+        }
+        .channel-details {
+            flex-grow: 1;
+        }
+        .channel-name {
+            font-size: 24px;
+            font-weight: 500;
+            color: #030303;
+        }
+        .subscriber-count {
+            font-size: 14px;
+            color: #606060;
+            margin-top: 4px;
+        }
+        .channel-description {
+            font-size: 14px;
+            color: #606060;
+            margin-top: 8px;
+            max-width: 800px;
+        }
+        .description-short {
+            display: inline;
+        }
+        .description-full {
+            display: none;
+        }
+        .description-toggle {
+            color: #065fd4;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .subscribe-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .subscribed {
+            background-color: grey;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 16px;
+        }
+        .tab {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #606060;
+            cursor: pointer;
+            transition: color 0.2s, border-bottom 0.2s;
+        }
+        .tab.active {
+            color: #030303;
+            border-bottom: 2px solid #030303;
+        }
+        .tab-content {
+            display: none;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .video-item {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .video-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .video-item img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: border-radius 0.3s ease;
+        }
+        .video-item:hover img {
+            border-radius: 4px;
+        }
+        .video-item .video-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #030303;
+            margin-top: 8px;
+            line-height: 22px;
+            transition: color 0.3s ease;
+        }
+        .video-item:hover .video-title {
+            color: #065fd4;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <img class="menu-icon" src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Hamburger_icon.svg" alt="Menu Icon" onclick="toggleSidebar()">
+        <a href="Homepage.html">
+            <div class="youtube-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube Logo">
+            </div>
+        </a>
+        <div class="search-bar">
+            <input type="text" placeholder="Search..." id="searchInput">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg" alt="Search Icon" onclick="searchVideos()">
+        </div>
+        <div class="profile-container">
+            <div class="profile-logo" id="profileLogo" onclick="toggleDropdown()"></div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <p onclick="goToProfile()">Profile</p>
+                <p onclick="logout()">Logout</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <p onclick="redirectToHome()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/06/Home_mpk.png" alt="Home"> Home
+        </p>
+        <p><a href="Subscriptions.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;"><img src="subscription.png" alt="Subscriptions"> Subscriptions</a></p>
+        <div class="divider"></div>
+        <p class="section-header">You ►</p>
+        <p><a href="History.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;"><img src="History.png" alt="History"> History</a></p>
+        <p><a href="Playlists.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;"><img src="Playlist.png" alt="Playlists"> Playlists</a></p>
+        <p><a href="WatchLater.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;"><img src="Watch Later.png" alt="Watch Later"> Watch Later</a></p>
+    </div>
+
+    <div class="content">
+        <div class="channel-banner">
+            <img src="Channel 2 Banner.png" alt="Channel Banner">
+        </div>
+        <div class="channel-header">
+            <div class="channel-info">
+                <img class="channel-logo" src="Channel 2 Logo.png" alt="Channel Logo">
+                <div class="channel-details">
+                    <div class="channel-name">3Blue1Brown</div>
+                    <div class="subscriber-count">1,000,000 subscribers</div>
+                    <div class="channel-description">
+                        <span class="description-short">My name is Grant Sanderson. Videos here cover...</span>
+                        <span class="description-full">My name is Grant Sanderson. Videos here cover a variety of topics in math, or adjacent fields like physics and CS, all with an emphasis on visualizing the core ideas. The goal is to use animation to help elucidate and motivate otherwise tricky topics, and for difficult problems to be made simple with changes in perspective..<br><br>
+                 </span>
+                        <span class="description-toggle" onclick="toggleDescription()">See more</span>
+                    </div>
+                </div>
+                <button class="subscribe-button" id="subscribe-btn" onclick="toggleSubscribe()">Subscribe</button>
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('home')">Home</div>
+                <div class="tab" onclick="switchTab('videos')">Videos</div>
+                <div class="tab" onclick="switchTab('community')">Community</div>
+                <div class="tab" onclick="switchTab('playlists')">Playlists</div>
+                <div class="tab" onclick="switchTab('about')">About</div>
+            </div>
+        </div>
+
+        <!-- Home Tab -->
+        <div class="tab-content active" id="home">
+            <div class="video-grid" id="home-videos">
+                <div class="video-item" onclick="window.location.href='Video 3.html'; addToHistory('Video 3.png', 'What does it feel like to invent math?', 'Video 3.html')">
+                    <img src="Video 3.png" alt="Video 3 Thumbnail">
+                    <div class="video-title">What does it feel like to invent math?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos Tab -->
+        <div class="tab-content" id="videos">
+            <div class="video-grid" id="videos-list">
+                <div class="video-item" onclick="window.location.href='Video 3.html'; addToHistory('Video 3.png', 'What does it feel like to invent math?', 'Video 3.html')">
+                    <img src="Video 3.png" alt="Video 3 Thumbnail">
+                    <div class="video-title">What does it feel like to invent math?</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Tab -->
+        <div class="tab-content" id="community">
+            <!-- Empty for now -->
+        </div>
+
+        <!-- Playlists Tab -->
+        <div class="tab-content" id="playlists">
+            <!-- Empty for now -->
+        </div>
+
+        <!-- About Tab -->
+        <div class="tab-content" id="about">
+            <!-- Empty for now -->
+        </div>
+    </div>
+
+    <script>
+        // Initial subscriber count and channel info
+        const initialSubscriberCount = 1000000;
+        const channelInfo = {
+            name: "3Blue1Brown",
+            logo: "Channel 2 Logo.png",
+            link: "Channel 2.html"
+        };
+
+        // Video data for this channel
+        const channelVideos = [
+            {
+                thumbnail: "Video 3.png",
+                title: "What does it feel like to invent math?",
+                link: "Video 3.html"
+            }
+        ];
+
+        // Display profile logo
+        window.onload = function() {
+            const currentUser = localStorage.getItem("currentUser");
+            const profileLogo = document.getElementById("profileLogo");
+            if (currentUser) {
+                const users = JSON.parse(localStorage.getItem("users")) || {};
+                const user = users[currentUser];
+                if (user) {
+                    if (user.profilePic) {
+                        const img = document.createElement("img");
+                        img.src = user.profilePic;
+                        img.style.width = "100%";
+                        img.style.height = "100%";
+                        img.style.borderRadius = "50%";
+                        img.style.objectFit = "cover";
+                        profileLogo.innerHTML = "";
+                        profileLogo.appendChild(img);
+                    } else {
+                        const firstLetter = user.name.charAt(0).toUpperCase();
+                        profileLogo.textContent = firstLetter;
+                    }
+                } else {
+                    profileLogo.textContent = "?"; // Default if no user data
+                }
+            } else {
+                profileLogo.textContent = "?"; // Default if no user is logged in
+            }
+
+            // Load subscription state
+            var btn = document.getElementById("subscribe-btn");
+            var subscriberCountElement = document.querySelector(".subscriber-count");
+            var isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+            var currentCount = parseInt(localStorage.getItem('subscriberCount')) || initialSubscriberCount;
+
+            if (isSubscribed) {
+                btn.classList.add("subscribed");
+                btn.style.backgroundColor = "grey";
+                btn.innerHTML = "Subscribed";
+            } else {
+                btn.classList.remove("subscribed");
+                btn.style.backgroundColor = "red";
+                btn.innerHTML = "Subscribe";
+            }
+
+            subscriberCountElement.textContent = `${currentCount.toLocaleString()} subscribers`;
+        };
+
+        function toggleSidebar() {
+            let sidebar = document.querySelector(".sidebar");
+            let content = document.querySelector(".content");
+            sidebar.classList.toggle("hidden");
+            content.classList.toggle("sidebar-hidden");
+        }
+
+        function redirectToHome() {
+            window.location.href = 'Homepage.html';
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function toggleSubscribe() {
+            var btn = document.getElementById("subscribe-btn");
+            var subscriberCountElement = document.querySelector(".subscriber-count");
+            var currentCount = parseInt(localStorage.getItem('subscriberCount')) || initialSubscriberCount;
+            var isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+
+            let subscriptions = JSON.parse(localStorage.getItem('subscriptions')) || [];
+
+            if (isSubscribed) {
+                btn.classList.remove("subscribed");
+                btn.style.backgroundColor = "red";
+                btn.innerHTML = "Subscribe";
+                currentCount = initialSubscriberCount;
+                localStorage.setItem('isSubscribed', 'false');
+                subscriptions = subscriptions.filter(sub => sub.name !== channelInfo.name);
+            } else {
+                btn.classList.add("subscribed");
+                btn.style.backgroundColor = "grey";
+                btn.innerHTML = "Subscribed";
+                currentCount = initialSubscriberCount + 1;
+                localStorage.setItem('isSubscribed', 'true');
+                if (!subscriptions.some(sub => sub.name === channelInfo.name)) {
+                    subscriptions.push(channelInfo);
+                }
+            }
+
+            localStorage.setItem('subscriberCount', currentCount);
+            localStorage.setItem('subscriptions', JSON.stringify(subscriptions));
+            subscriberCountElement.textContent = `${currentCount.toLocaleString()} subscribers`;
+        }
+
+        function toggleDescription() {
+            var shortDesc = document.querySelector('.description-short');
+            var fullDesc = document.querySelector('.description-full');
+            var toggle = document.querySelector('.description-toggle');
+
+            if (fullDesc.style.display === 'block') {
+                shortDesc.style.display = 'inline';
+                fullDesc.style.display = 'none';
+                toggle.textContent = 'See more';
+            } else {
+                shortDesc.style.display = 'none';
+                fullDesc.style.display = 'block';
+                toggle.textContent = 'See less';
+            }
+        }
+
+        function addToHistory(thumbnailUrl, videoTitle, videoLink) {
+            let history = JSON.parse(localStorage.getItem('videoHistory')) || [];
+            const videoExists = history.some(item => item.thumbnailUrl === thumbnailUrl);
+            if (!videoExists) {
+                history.push({ thumbnailUrl, videoTitle, videoLink });
+                localStorage.setItem('videoHistory', JSON.stringify(history));
+            }
+        }
+
+        function searchVideos() {
+            const searchInput = document.getElementById("searchInput").value.trim().toLowerCase();
+            const homeVideos = document.getElementById("home-videos");
+            const videosList = document.getElementById("videos-list");
+            
+            if (searchInput === "") {
+                loadAllVideos();
+                return;
+            }
+
+            const filteredVideos = channelVideos.filter(video => {
+                const titleLower = video.title.toLowerCase();
+                return titleLower.includes(searchInput);
+            });
+
+            homeVideos.innerHTML = '';
+            videosList.innerHTML = '';
+
+            filteredVideos.forEach(video => {
+                const videoElement = `
+                    <div class="video-item" onclick="window.location.href='${video.link}'; addToHistory('${video.thumbnail}', '${video.title}', '${video.link}')">
+                        <img src="${video.thumbnail}" alt="${video.title}">
+                        <div class="video-title">${video.title}</div>
+                    </div>
+                `;
+                homeVideos.innerHTML += videoElement;
+                videosList.innerHTML += videoElement;
+            });
+        }
+
+        function loadAllVideos() {
+            const homeVideos = document.getElementById("home-videos");
+            const videosList = document.getElementById("videos-list");
+            
+            homeVideos.innerHTML = '';
+            videosList.innerHTML = '';
+
+            channelVideos.forEach(video => {
+                const videoElement = `
+                    <div class="video-item" onclick="window.location.href='${video.link}'; addToHistory('${video.thumbnail}', '${video.title}', '${video.link}')">
+                        <img src="${video.thumbnail}" alt="${video.title}">
+                        <div class="video-title">${video.title}</div>
+                    </div>
+                `;
+                homeVideos.innerHTML += videoElement;
+                videosList.innerHTML += videoElement;
+            });
+        }
+
+        document.getElementById("searchInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                searchVideos();
+            }
+        });
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById("dropdownMenu");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        function goToProfile() {
+            window.location.href = "Profile.html";
+        }
+
+        function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "Log In.html";
+        }
+
+        document.addEventListener("click", function(event) {
+            const profileContainer = document.querySelector(".profile-container");
+            const dropdown = document.getElementById("dropdownMenu");
+            if (!profileContainer.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

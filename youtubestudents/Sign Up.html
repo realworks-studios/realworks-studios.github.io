@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Students - Sign Up</title>
+    <link rel="icon" href="E:\Tanay Shah\Websites\Edphones\Youtube Students\youtube favicon.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f9f9f9;
+            position: relative;
+        }
+        .youtube-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100px;
+        }
+        .signup-container {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .signup-container h2 {
+            margin-bottom: 20px;
+        }
+        .signup-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .signup-container button {
+            width: 100%;
+            padding: 12px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .signup-container button:disabled {
+            background: grey;
+            cursor: not-allowed;
+        }
+        .signup-container button:hover:enabled {
+            background: darkred;
+        }
+        .signup-container p {
+            margin-top: 15px;
+        }
+    </style>
+<script>
+    function checkInputs() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const button = document.getElementById("signup-btn");
+        const emailPattern = /^(.*@gmail\.com|.*@yahoo\.com)$/;
+        
+        if (name && emailPattern.test(email) && password.length >= 8) {
+            button.disabled = false;
+        } else {
+            button.disabled = true;
+        }
+    }
+
+    function signUp() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        let users = JSON.parse(localStorage.getItem("users")) || {};
+        if (users[email]) {
+            alert("An account with this email already exists!");
+            return;
+        }
+        users[email] = { name, password };
+        localStorage.setItem("users", JSON.stringify(users));
+        
+        // Store current user email
+        localStorage.setItem("currentUser", email);
+        
+        alert("Sign up successful! Redirecting to homepage...");
+        window.location.href = "Homepage.html";
+    }
+</script>
+</head>
+<body>
+    <img class="youtube-icon" src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube Logo">
+    <div class="signup-container">
+        <h2>Sign Up for YouTube Students</h2>
+        <input type="text" id="name" placeholder="Enter your name" required oninput="checkInputs()">
+        <input type="email" id="email" placeholder="Enter your email" required oninput="checkInputs()">
+        <input type="password" id="password" placeholder="Create a password" required oninput="checkInputs()" minlength="8">
+        <button id="signup-btn" onclick="signUp()" disabled>Sign Up</button>
+        <p>Already have an account? <a href="Log In.html">Log In</a></p>
+    </div>
+</body>
+</html>

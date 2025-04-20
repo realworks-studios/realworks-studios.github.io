@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduStore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="Edustore.png">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --success-color: #10b981;
+            --accent-color: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--light-color);
+            color: var(--dark-color);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-menu a {
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-color);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-image {
+            height: 180px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .app-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .app-info {
+            padding: 1.5rem;
+        }
+
+        .app-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .app-developer {
+            color: var(--accent-color);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .app-description {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .install-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .install-btn:hover {
+            background: #1e40af;
+        }
+
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero h2 {
+                font-size: 1.875rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>EduStore</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#featured">Featured</a>
+                <a href="#communication">Social Media</a>
+                <a href="#new">New Arrivals</a>
+                <a href="#ecommerce">E-commerce</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Empowering Students with EduStore</h2>
+            <p>Your one-stop platform for educational apps, designed to enhance learning and fuel academic success.</p>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search educational apps...">
+                <button class="search-btn" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 class="section-title" id="featured">Featured Apps</h2>
+        <div class="apps-grid" id="featuredApps">
+            <div class="app-card" data-name="unacademy" data-category="education">
+                <div class="app-image">
+                    <img src="images/Unacademy.png" alt="Unacademy">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Unacademy</h3>
+                    <p class="app-developer">Unacademy</p>
+                    <p class="app-description">India's largest learning platform with courses for JEE, NEET, UPSC and more.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.unacademyapp" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="physics wallah" data-category="education">
+                <div class="app-image">
+                    <img src="images/PW.png" alt="Physics Wallah">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Physics Wallah</h3>
+                    <p class="app-developer">Physics Wallah</p>
+                    <p class="app-description">Free courses for JEE & NEET preparation with live classes and study material.</p>
+                    <a href="https://play.google.com/store/search?q=physics+wallah&c=apps" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="allen digital" data-category="education">
+                <div class="app-image">
+                    <img src="images/allen.png" alt="Allen Digital">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Allen Digital</h3>
+                    <p class="app-developer">Allen Career Institute</p>
+                    <p class="app-description">Premium coaching for JEE & NEET aspirants with test series and video lectures.</p>
+                    <a href="https://play.google.com/store/apps/details?id=digital.allen.study" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="aakash live" data-category="education">
+                <div class="app-image">
+                    <img src="images/aakash.png" alt="Aakash Live">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Aakash Live</h3>
+                    <p class="app-developer">Aakash Institute</p>
+                    <p class="app-description">Live classes and recorded lectures for JEE, NEET and foundation courses.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.aakash.myaakashapp" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="byju's exam prep" data-category="education">
+                <div class="app-image">
+                    <img src="images/byjus.png" alt="BYJU'S Exam Prep">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">BYJU'S Exam Prep</h3>
+                    <p class="app-developer">BYJU'S</p>
+                    <p class="app-description">Comprehensive preparation for UPSC, Banking, SSC and other government exams.</p>
+                    <a href="https://play.google.com/store/search?q=BYJUS&c=apps" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="duolingo" data-category="language">
+                <div class="app-image">
+                    <img src="images/Duolingo.png" alt="Duolingo">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Duolingo</h3>
+                    <p class="app-developer">Duolingo</p>
+                    <p class="app-description">Learn languages for free with fun, bite-sized lessons. Spanish, French, German and more.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.duolingo" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="vision ias" data-category="education">
+                <div class="app-image">
+                    <img src="images/Vision IAS.png" alt="Vision IAS">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Vision IAS</h3>
+                    <p class="app-developer">Vision IAS</p>
+                    <p class="app-description">UPSC Civil Services exam preparation with current affairs and test series.</p>
+                    <a href="https://play.google.com/store/search?q=VISION%20IAS&c=apps" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="toppr" data-category="education">
+                <div class="app-image">
+                    <img src="images/Toppr.png" alt="Toppr">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Toppr</h3>
+                    <p class="app-developer">Toppr.com</p>
+                    <p class="app-description">Learning app for CBSE, ICSE, JEE, NEET and other competitive exams.</p>
+                    <a href="https://play.google.com/store/search?q=TOPPR&c=apps" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="communication" style="margin-top: 4rem;">Social Media</h2>
+        <div class="apps-grid" id="communicationApps">
+            <div class="app-card" data-name="whatsapp" data-category="communication">
+                <div class="app-image">
+                    <img src="images/Whatsapp.png" alt="WhatsApp">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">WhatsApp</h3>
+                    <p class="app-developer">WhatsApp LLC</p>
+                    <p class="app-description">Simple, reliable messaging and calling for free, available all over the world.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.whatsapp" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="instagram" data-category="communication">
+                <div class="app-image">
+                    <img src="images/Instagram.png" alt="Instagram">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Instagram</h3>
+                    <p class="app-developer">Instagram</p>
+                    <p class="app-description">Connect with friends, share photos and videos, and explore educational content.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.instagram.android" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="twitter" data-category="communication">
+                <div class="app-image">
+                    <img src="images/X.png" alt="X">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">X</h3>
+                    <p class="app-developer">X.inc</p>
+                    <p class="app-description">Follow educational accounts, join conversations, and stay updated with news.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.twitter.android" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="telegram" data-category="communication">
+                <div class="app-image">
+                    <img src="images/Telegram.png" alt="Telegram">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Telegram</h3>
+                    <p class="app-developer">Telegram FZ-LLC</p>
+                    <p class="app-description">Fast and secure messaging app with strong encryption and cloud storage.</p>
+                    <a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="new" style="margin-top: 4rem;">New Arrivals</h2>
+        <div class="apps-grid" id="newApps">
+            <div class="app-card" data-name="quizlet" data-category="education">
+                <div class="app-image">
+                    <img src="images/Quizlet.png" alt="Quizlet">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Quizlet</h3>
+                    <p class="app-developer">Quizlet Inc.</p>
+                    <p class="app-description">Study with flashcards, practice tests, and expert-written solutions.</p>
+                    <a href="https://play.google.com/store/search?q=QUIZLET&c=apps" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="drishti ias" data-category="education">
+                <div class="app-image">
+                    <img src="images/Dristi.png" alt="Drishti IAS">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Drishti IAS</h3>
+                    <p class="app-developer">Drishti The Vision</p>
+                    <p class="app-description">UPSC preparation app with current affairs, test series and video lectures.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.drishti.academy.app" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="vedantu" data-category="education">
+                <div class="app-image">
+                    <img src="images/Vedantu.png" alt="Vedantu">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Vedantu</h3>
+                    <p class="app-developer">Vedantu</p>
+                    <p class="app-description">Live online classes for JEE, NEET, CBSE and other boards.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.vedantu.app" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="babbel" data-category="language">
+                <div class="app-image">
+                    <img src="images/babbel.png" alt="Babbel">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Babbel</h3>
+                    <p class="app-developer">Babbel</p>
+                    <p class="app-description">Learn Spanish, French, Italian and more with expert-crafted courses.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.babbel.mobile.android.en" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="ecommerce" style="margin-top: 4rem;">E-commerce Apps</h2>
+        <div class="apps-grid" id="ecommerceApps">
+            <div class="app-card" data-name="amazon" data-category="ecommerce">
+                <div class="app-image">
+                    <img src="images/amazon.png" alt="Amazon">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Amazon Shopping</h3>
+                    <p class="app-developer">Amazon Mobile LLC</p>
+                    <p class="app-description">Shop millions of products, track orders, and enjoy fast delivery with Amazon.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.amazon.mShop.android.shopping" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+            <div class="app-card" data-name="zepto" data-category="ecommerce">
+                <div class="app-image">
+                    <img src="images/Zepto.png" alt="Zepto">
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Zepto</h3>
+                    <p class="app-developer">KiranaKart Technologies</p>
+                    <p class="app-description">Get groceries and essentials delivered in 10 minutes, anytime, anywhere.</p>
+                    <a href="https://play.google.com/store/apps/details?id=com.zeptoconsumerapp" class="install-btn" target="_blank">Install</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <h3>EduStore</h3>
+            <p>Your trusted platform for educational apps and resources.</p>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            <p class="copyright">&copy; 2025 EduStore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const allApps = document.querySelectorAll('.app-card');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                
+                allApps.forEach(app => {
+                    const appName = app.getAttribute('data-name').toLowerCase();
+                    const appTitle = app.querySelector('.app-name').textContent.toLowerCase();
+                    const appDescription = app.querySelector('.app-description').textContent.toLowerCase();
+                    
+                    if (appName.includes(searchTerm) || 
+                        appTitle.includes(searchTerm) || 
+                        appDescription.includes(searchTerm)) {
+                        app.classList.remove('hidden');
+                    } else {
+                        app.classList.add('hidden');
+                    }
+                });
+            }
+            
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
