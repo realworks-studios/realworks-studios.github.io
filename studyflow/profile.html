@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Study Flow</title>
+    <link rel="icon" type="image/png" href="studyflow.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .profile-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #0277bd;
+            font-size: 1.8rem;
+        }
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #0288d1;
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            object-fit: cover; /* For uploaded images */
+        }
+        .info-section {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .info-section p {
+            font-size: 1.1rem;
+            color: #424242;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .edit-btn {
+            color: #0288d1;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+        .edit-btn:hover {
+            color: #0277bd;
+        }
+        .edit-input {
+            width: 70%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            display: none;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #0277bd;
+        }
+        .success {
+            color: #2e7d32;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .back-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .back-link a {
+            color: #0288d1;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="header">
+            <h1>Profile</h1>
+            <div>
+                <div class="profile-picture" id="profilePic"></div>
+                <span class="edit-btn" onclick="toggleProfilePicEdit()">Edit</span>
+                <input type="file" id="profilePicInput" accept="image/*" class="hidden" onchange="changeProfilePic()">
+            </div>
+        </div>
+        <div class="info-section" id="profileInfo">
+            <p>
+                <strong>Name:</strong> <span id="userName"></span>
+                <span class="edit-btn" onclick="toggleNameEdit()">Edit</span>
+                <input type="text" id="nameInput" class="edit-input" placeholder="Enter new name">
+            </p>
+            <p><strong>Phone Number:</strong> <span id="phone"></span></p>
+            <p><strong>Your Email:</strong> <span id="userEmail"></span></p>
+            <p><strong>Teacher's Email:</strong> <span id="teacherEmail"></span></p>
+            <p><strong>Parent's Email:</strong> <span id="parentEmail"></span></p>
+        </div>
+        <div id="message" class="success"></div>
+        <div class="back-link">
+            <a href="studyflow.html">Back to Study Flow</a>
+        </div>
+    </div>
+
+    <script>
+        // Redirect to login if not logged in
+        if (!localStorage.getItem('phone')) {
+            window.location.href = 'login.html';
+        }
+
+        // Load profile data from localStorage
+        const phone = localStorage.getItem('phone');
+        const userEmail = localStorage.getItem('userEmail');
+        const teacherEmail = localStorage.getItem('teacherEmail');
+        const parentEmail = localStorage.getItem('parentEmail');
+        const userName = localStorage.getItem('userName') || 'Not set';
+
+        // Set profile picture initial
+        const profilePic = document.getElementById('profilePic');
+        const storedImage = localStorage.getItem('profilePic');
+        if (storedImage) {
+            profilePic.style.backgroundColor = 'transparent'; // Remove blue background for image
+            profilePic.innerHTML = `<img src="${storedImage}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else if (userEmail) {
+            profilePic.textContent = userEmail.charAt(0).toUpperCase();
+        }
+
+        // Display profile information
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('phone').textContent = phone || 'Not set';
+        document.getElementById('userEmail').textContent = userEmail || 'Not set';
+        document.getElementById('teacherEmail').textContent = teacherEmail || 'Not set';
+        document.getElementById('parentEmail').textContent = parentEmail || 'Not set';
+
+        // Toggle Name Edit
+        function toggleNameEdit() {
+            const nameSpan = document.getElementById('userName');
+            const nameInput = document.getElementById('nameInput');
+            const message = document.getElementById('message');
+
+            if (nameInput.style.display === 'none' || nameInput.style.display === '') {
+                nameInput.style.display = 'block';
+                nameSpan.style.display = 'none';
+                nameInput.value = nameSpan.textContent === 'Not set' ? '' : nameSpan.textContent;
+                nameInput.focus();
+            } else {
+                const newName = nameInput.value.trim();
+                if (newName) {
+                    localStorage.setItem('userName', newName);
+                    nameSpan.textContent = newName;
+                    message.textContent = "Name updated successfully!";
+                    message.className = "success";
+                } else {
+                    message.textContent = "Please enter a name.";
+                    message.className = "error";
+                }
+                nameInput.style.display = 'none';
+                nameSpan.style.display = 'inline';
+            }
+        }
+
+        // Toggle Profile Picture Edit
+        function toggleProfilePicEdit() {
+            const profilePicInput = document.getElementById('profilePicInput');
+            profilePicInput.click(); // Trigger file input click
+        }
+
+        // Change Profile Picture
+        function changeProfilePic() {
+            const profilePicInput = document.getElementById('profilePicInput');
+            const message = document.getElementById('message');
+            const file = profilePicInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    localStorage.setItem('profilePic', imageData); // Store image as base64
+                    profilePic.style.backgroundColor = 'transparent'; // Remove blue background
+                    profilePic.innerHTML = `<img src="${imageData}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    message.textContent = "Profile picture updated successfully!";
+                    message.className = "success";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                message.textContent = "Please select an image.";
+                message.className = "error";
+            }
+        }
+    </script>
+</body>
+</html>

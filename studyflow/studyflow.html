@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Flow</title>
+    <link rel="icon" type="image/png" href="studyflow.png">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #0277bd;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        .section {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        .section h2 {
+            color: #01579b;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0277bd;
+        }
+        .button:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+        .flex-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100px;
+        }
+        .info {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            color: #424242;
+        }
+        .warning {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+        .success {
+            color: #2e7d32;
+        }
+        #pdfPreview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #pdfIframe {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #0288d1;
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            object-fit: cover; /* For uploaded images */
+        }
+        .dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+        }
+        .dropdown a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+        .dropdown a:hover {
+            background-color: #f0f0f0;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            .flex-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .button {
+                width: 100%;
+            }
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Study Flow</h1>
+            <div>
+                <div class="profile-picture" id="profilePic" onclick="toggleDropdown()"></div>
+                <div class="dropdown" id="dropdownMenu">
+                    <a href="profile.html">Profile</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Tracking Section -->
+        <div class="section">
+            <h2>Usage Tracking</h2>
+            <p>Monitor your non-educational activity time:</p>
+            <div class="flex-row">
+                <button class="button" id="startNonEdu">Start Non-Educational</button>
+                <button class="button" id="stopNonEdu">Stop</button>
+            </div>
+            <div class="info" id="timer">Time Remaining: 15:00</div>
+            <div class="info" id="usage-report">Daily Usage: 0/5 sessions used</div>
+            <div class="info" id="total-usage">Total Non-Educational Uses: 0</div>
+            <div class="info" id="violations">Total Violations: 0</div>
+            <div class="info warning" id="warnings"></div>
+        </div>
+
+        <!-- Goal Setting Section -->
+        <div class="section">
+            <h2>Set Study Goals</h2>
+            <div class="flex-row">
+                <label for="studyGoal">Daily Study Goal (hours):</label>
+                <input type="number" id="studyGoal" min="0.1" max="24" step="0.1" value="1" oninput="restrictInput(this)">
+                <button class="button" onclick="setGoal()">Set Goal</button>
+            </div>
+            <div class="info" id="goalStatus">Goal: Not set</div>
+        </div>
+
+        <!-- Study Tasks Section -->
+        <div class="section">
+            <h2>What Did You Study Today?</h2>
+            <div class="flex-row">
+                <button class="button" onclick="window.location.href='study-tasks.html'">Add Study Tasks</button>
+            </div>
+        </div>
+
+        <!-- Report Section -->
+        <div class="section">
+            <h2>Generate Report</h2>
+            <button class="button" onclick="generateAndPreviewPDF('manual')">Send Manual Report to Emails</button>
+            <div class="info success" id="reportStatus">Report not sent yet.</div>
+            <div id="pdfPreview" style="display: none;">
+                <h3>PDF Preview</h3>
+                <iframe id="pdfIframe"></iframe>
+                <div class="flex-row">
+                    <button class="button" onclick="sendManualReport()">Confirm and Send</button>
+                    <button class="button" onclick="cancelPreview()" style="background-color: #d32f2f;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS with your User ID
+        (function() {
+            emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS User ID
+        })();
+
+        // Access jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Redirect to login if not logged in
+        if (!localStorage.getItem('phone')) {
+            window.location.href = 'login.html';
+        }
+
+        // Set profile picture
+        const userEmail = localStorage.getItem('userEmail');
+        const profilePic = document.getElementById('profilePic');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const storedImage = localStorage.getItem('profilePic');
+        if (storedImage) {
+            profilePic.style.backgroundColor = 'transparent'; // Remove blue background for image
+            profilePic.innerHTML = `<img src="${storedImage}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else if (userEmail) {
+            profilePic.textContent = userEmail.charAt(0).toUpperCase();
+        }
+
+        // Toggle Dropdown
+        function toggleDropdown() {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('password');
+            localStorage.removeItem('phone');
+            localStorage.removeItem('teacherEmail');
+            localStorage.removeItem('parentEmail');
+            localStorage.removeItem('profilePic'); // Optional: Remove profile pic on logout
+            window.location.href = 'login.html';
+        }
+
+        // Initialize variables with localStorage persistence
+        let timer = 15 * 60; // 15 minutes in seconds
+        let interval = null;
+        let sessionsUsed = parseInt(localStorage.getItem('sessionsUsed')) || 0;
+        let totalNonEduUses = parseInt(localStorage.getItem('totalNonEduUses')) || 0;
+        let totalViolations = parseInt(localStorage.getItem('totalViolations')) || 0;
+        let maxSessions = 5;
+        let isRunning = false;
+        let lastSessionEnd = parseInt(localStorage.getItem('lastSessionEnd')) || null;
+        let currentPDF = null;
+        let studyTasks = JSON.parse(localStorage.getItem('studyTasks')) || [];
+
+        const timerDisplay = document.getElementById('timer');
+        const usageReport = document.getElementById('usage-report');
+        const totalUsage = document.getElementById('total-usage');
+        const violations = document.getElementById('violations');
+        const warnings = document.getElementById('warnings');
+        const startButton = document.getElementById('startNonEdu');
+        const reportStatus = document.getElementById('reportStatus');
+        const pdfPreview = document.getElementById('pdfPreview');
+        const pdfIframe = document.getElementById('pdfIframe');
+
+        // Update UI on page load
+        window.onload = () => {
+            checkDailyReset();
+            updateUsageReport();
+            updateTotalUsage();
+            updateViolations();
+            if (sessionsUsed >= maxSessions) {
+                startButton.disabled = true;
+                warnings.textContent = "Daily limit of 5 sessions reached!";
+            }
+            if (localStorage.getItem('studyGoal')) {
+                document.getElementById('studyGoal').value = localStorage.getItem('studyGoal');
+                document.getElementById('goalStatus').textContent = `Goal: ${localStorage.getItem('studyGoal')} hours of study per day`;
+            }
+        };
+
+        // Start Non-Educational Activity
+        document.getElementById('startNonEdu').addEventListener('click', () => {
+            if (sessionsUsed >= maxSessions) {
+                warnings.textContent = "Daily limit of 5 sessions reached!";
+                startButton.disabled = true;
+                totalViolations++;
+                saveToLocalStorage();
+                updateViolations();
+                return;
+            }
+            if (lastSessionEnd && (Date.now() - lastSessionEnd) < 60 * 60 * 1000) {
+                warnings.textContent = "Please wait 1 hour before starting another session.";
+                totalViolations++;
+                saveToLocalStorage();
+                updateViolations();
+                return;
+            }
+            if (!isRunning) {
+                isRunning = true;
+                startButton.disabled = true;
+                interval = setInterval(() => {
+                    timer--;
+                    let minutes = Math.floor(timer / 60);
+                    let seconds = timer % 60;
+                    timerDisplay.textContent = `Time Remaining: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                    
+                    if (timer <= 0) {
+                        clearInterval(interval);
+                        isRunning = false;
+                        sessionsUsed++;
+                        totalNonEduUses++;
+                        lastSessionEnd = Date.now();
+                        saveToLocalStorage();
+                        timer = 15 * 60;
+                        timerDisplay.textContent = "Time Remaining: 15:00";
+                        warnings.textContent = "15-minute limit exceeded! Non-educational content blocked.";
+                        startButton.disabled = false;
+                        updateUsageReport();
+                        updateTotalUsage();
+                    }
+                }, 1000);
+            }
+        });
+
+        // Stop Non-Educational Activity
+        document.getElementById('stopNonEdu').addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(interval);
+                isRunning = false;
+                sessionsUsed++;
+                totalNonEduUses++;
+                lastSessionEnd = Date.now();
+                saveToLocalStorage();
+                timer = 15 * 60;
+                timerDisplay.textContent = "Time Remaining: 15:00";
+                warnings.textContent = "";
+                startButton.disabled = false;
+                updateUsageReport();
+                updateTotalUsage();
+            }
+        });
+
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('sessionsUsed', sessionsUsed);
+            localStorage.setItem('totalNonEduUses', totalNonEduUses);
+            localStorage.setItem('totalViolations', totalViolations);
+            localStorage.setItem('lastSessionEnd', lastSessionEnd);
+            localStorage.setItem('lastReset', Date.now());
+            localStorage.setItem('studyTasks', JSON.stringify(studyTasks));
+        }
+
+        // Update Usage Report
+        function updateUsageReport() {
+            usageReport.textContent = `Daily Usage: ${sessionsUsed}/${maxSessions} sessions used`;
+            if (sessionsUsed >= maxSessions) {
+                startButton.disabled = true;
+            }
+        }
+
+        // Update Total Usage
+        function updateTotalUsage() {
+            totalUsage.textContent = `Total Non-Educational Uses: ${totalNonEduUses}`;
+        }
+
+        // Update Violations
+        function updateViolations() {
+            violations.textContent = `Total Violations: ${totalViolations}`;
+        }
+
+        // Restrict input to max 24 and min 0.1 in real-time
+        function restrictInput(input) {
+            if (input.value > 24) {
+                input.value = 24;
+            } else if (input.value < 0.1) {
+                input.value = 0.1;
+            }
+        }
+
+        // Set Study Goal (in hours)
+        function setGoal() {
+            let goalHours = parseFloat(document.getElementById('studyGoal').value);
+            
+            // Ensure the goal does not exceed 24 hours
+            if (goalHours > 24) {
+                goalHours = 24; // Cap it at 24
+                document.getElementById('studyGoal').value = 24; // Update input field
+                document.getElementById('goalStatus').textContent = "Goal: 24 hours of study per day (maximum allowed)";
+                localStorage.setItem('studyGoal', 24);
+                warnings.textContent = "Study goal capped at 24 hours!";
+            } else if (goalHours < 0.1) {
+                goalHours = 0.1; // Enforce minimum
+                document.getElementById('studyGoal').value = 0.1;
+                document.getElementById('goalStatus').textContent = "Goal: 0.1 hours of study per day (minimum allowed)";
+                localStorage.setItem('studyGoal', 0.1);
+                warnings.textContent = "Study goal set to minimum of 0.1 hours!";
+            } else {
+                document.getElementById('goalStatus').textContent = `Goal: ${goalHours} hours of study per day`;
+                localStorage.setItem('studyGoal', goalHours);
+                warnings.textContent = ""; // Clear any previous warnings
+            }
+        }
+
+        // Generate PDF
+        function generatePDF(type) {
+            const doc = new jsPDF();
+            const date = new Date().toLocaleDateString();
+            const title = type === 'manual' ? `Manual Study Flow Report (${date})` : `Daily Study Flow Report (${date})`;
+
+            doc.setFontSize(16);
+            doc.text(title, 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Daily Non-Educational Sessions Used: ${sessionsUsed}/${maxSessions}`, 20, 40);
+            doc.text(`Total Non-Educational Uses: ${totalNonEduUses}`, 20, 50);
+            doc.text(`Total Violations: ${totalViolations}`, 20, 60);
+            doc.text(`Study Goal: ${document.getElementById('studyGoal').value} hours`, 20, 70);
+
+            if (studyTasks.length > 0) {
+                doc.text("Study Tasks Today:", 20, 90);
+                studyTasks.forEach((task, index) => {
+                    doc.text(`${index + 1}. ${task.task} (Added: ${task.date})`, 20, 100 + index * 10, { maxWidth: 160 });
+                });
+            }
+
+            return doc;
+        }
+
+        // Generate and Preview PDF
+        function generateAndPreviewPDF(type) {
+            currentPDF = generatePDF(type);
+            const pdfDataUri = currentPDF.output('datauristring');
+            pdfIframe.src = pdfDataUri;
+            pdfPreview.style.display = 'block';
+            reportStatus.textContent = "Previewing report... Confirm to send.";
+        }
+
+        // Cancel Preview
+        function cancelPreview() {
+            pdfPreview.style.display = 'none';
+            reportStatus.textContent = "Report preview cancelled.";
+            currentPDF = null;
+        }
+
+        // Send Email Function (Text-based for EmailJS)
+        function sendEmail(toEmail, reportType, pdfContent, callback) {
+            const templateParams = {
+                to_email: toEmail,
+                date: new Date().toLocaleDateString(),
+                daily_sessions: `${sessionsUsed}/${maxSessions}`,
+                total_uses: totalNonEduUses,
+                violations: totalViolations,
+                study_goal: document.getElementById('studyGoal').value,
+                pdf_content: pdfContent
+            };
+
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                .then(() => {
+                    console.log(`${reportType} report sent to ${toEmail}`);
+                    callback(true);
+                }, (error) => {
+                    console.error('Email sending failed:', error);
+                    callback(false);
+                });
+        }
+
+        // Send Manual Report
+        function sendManualReport() {
+            if (!currentPDF) {
+                reportStatus.textContent = "No PDF generated yet.";
+                return;
+            }
+
+            const pdfText = `Study Flow Report (${new Date().toLocaleDateString()}):
+- Daily Non-Educational Sessions Used: ${sessionsUsed}/${maxSessions}
+- Total Non-Educational Uses: ${totalNonEduUses}
+- Total Violations: ${totalViolations}
+- Study Goal: ${document.getElementById('studyGoal').value} hours
+${studyTasks.length > 0 ? "\nStudy Tasks Today:\n" + studyTasks.map((t, i) => `${i + 1}. ${t.task} (Added: ${t.date})`).join('\n') : ""}`;
+
+            const emails = [
+                localStorage.getItem('userEmail'),
+                localStorage.getItem('teacherEmail'),
+                localStorage.getItem('parentEmail')
+            ];
+            let successCount = 0;
+
+            emails.forEach(email => {
+                sendEmail(email, 'Manual', pdfText, (success) => {
+                    if (success) successCount++;
+                    if (successCount === emails.length) {
+                        reportStatus.textContent = "Manual report sent to all emails!";
+                        pdfPreview.style.display = 'none';
+                        currentPDF = null;
+                    } else if (successCount > 0) {
+                        reportStatus.textContent = "Manual report sent to some emails (check console).";
+                    } else {
+                        reportStatus.textContent = "Failed to send manual report (check console).";
+                    }
+                });
+            });
+        }
+
+        // Daily Reset Logic
+        function checkDailyReset() {
+            const now = new Date();
+            const lastReset = localStorage.getItem('lastReset') ? new Date(parseInt(localStorage.getItem('lastReset'))) : null;
+
+            if (!lastReset || now.getDate() !== lastReset.getDate()) {
+                // Reset daily data
+                sessionsUsed = 0;
+                lastSessionEnd = null;
+                studyTasks = []; // Reset study tasks daily
+                saveToLocalStorage();
+                updateUsageReport();
+                startButton.disabled = false;
+                warnings.textContent = "Daily sessions reset!";
+            }
+        }
+        checkDailyReset();
+
+        // Check for end of day every minute (for demo; adjust to daily in production)
+        setInterval(() => {
+            checkDailyReset();
+        }, 60000); // 1 minute for testing
+    </script>
+</body>
+</html>

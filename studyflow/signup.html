@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Study Flow</title>
+    <link rel="icon" type="image/png" href="studyflow.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .signup-container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #0277bd;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            color: #01579b;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .button {
+            padding: 12px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0277bd;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .login-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .login-link a {
+            color: #0288d1;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1>Sign Up for Study Flow</h1>
+        <div class="form-group">
+            <label for="userName">Your Name</label>
+            <input type="text" id="userName" placeholder="e.g., John Doe" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="e.g., 9876543210" required>
+        </div>
+        <div class="form-group">
+            <label for="userEmail">Your Email ID</label>
+            <input type="email" id="userEmail" placeholder="e.g., you@example.com" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        <div class="form-group">
+            <label for="teacherEmail">Teacher's Email ID</label>
+            <input type="email" id="teacherEmail" placeholder="e.g., teacher@example.com" required>
+        </div>
+        <div class="form-group">
+            <label for="parentEmail">Parent's Email ID</label>
+            <input type="email" id="parentEmail" placeholder="e.g., parent@example.com" required>
+        </div>
+        <button class="button" onclick="signup()">Sign Up</button>
+        <div class="error" id="errorMsg"></div>
+        <div class="login-link">
+            Already have an account? <a href="login.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        function signup() {
+            const userName = document.getElementById('userName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const userEmail = document.getElementById('userEmail').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const teacherEmail = document.getElementById('teacherEmail').value.trim();
+            const parentEmail = document.getElementById('parentEmail').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!userName || !phone || !userEmail || !password || !teacherEmail || !parentEmail) {
+                errorMsg.textContent = "Please fill in all fields.";
+                return;
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                errorMsg.textContent = "Phone number must be 10 digits.";
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail) || 
+                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(teacherEmail) || 
+                !/^[^\s@]+@[^\s@]+$/.test(parentEmail)) {
+                errorMsg.textContent = "Please enter valid email addresses.";
+                return;
+            }
+            if (password.length < 6) {
+                errorMsg.textContent = "Password must be at least 6 characters long.";
+                return;
+            }
+
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('phone', phone);
+            localStorage.setItem('userEmail', userEmail);
+            localStorage.setItem('password', password);
+            localStorage.setItem('teacherEmail', teacherEmail);
+            localStorage.setItem('parentEmail', parentEmail);
+
+            window.location.href = 'studyflow.html';
+        }
+    </script>
+</body>
+</html>

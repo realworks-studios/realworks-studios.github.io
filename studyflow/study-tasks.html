@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tasks - Study Flow</title>
+    <link rel="icon" type="image/png" href="studyflow.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #0277bd;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        .task-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0277bd;
+        }
+        .task-list {
+            list-style: none;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        .task-item span {
+            flex: 1;
+            color: #424242;
+        }
+        .delete-btn {
+            background-color: #d32f2f;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+        .delete-btn:hover {
+            background-color: #c62828;
+        }
+        .back-btn {
+            margin-top: 20px;
+            background-color: #0288d1;
+            width: 100%;
+        }
+        @media (max-width: 500px) {
+            .task-input {
+                flex-direction: column;
+            }
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Study Tasks</h1>
+        </div>
+        <div class="task-input">
+            <input type="text" id="taskInput" placeholder="What did you study today?">
+            <button class="button" onclick="addTask()">Add Task</button>
+        </div>
+        <ul class="task-list" id="taskList"></ul>
+        <button class="button back-btn" onclick="window.location.href='studyflow.html'">Back to Main</button>
+    </div>
+
+    <script>
+        // Redirect to login if not logged in
+        if (!localStorage.getItem('phone')) {
+            window.location.href = 'login.html';
+        }
+
+        // Load study tasks from localStorage
+        let studyTasks = JSON.parse(localStorage.getItem('studyTasks')) || [];
+        const taskList = document.getElementById('taskList');
+
+        // Display tasks on page load
+        window.onload = () => {
+            renderTasks();
+        };
+
+        // Add a new task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+
+            if (!taskText) {
+                alert("Please enter a task!");
+                return;
+            }
+
+            const task = {
+                task: taskText,
+                date: new Date().toLocaleString()
+            };
+
+            studyTasks.push(task);
+            localStorage.setItem('studyTasks', JSON.stringify(studyTasks));
+            renderTasks();
+            taskInput.value = '';
+        }
+
+        // Render tasks in the list
+        function renderTasks() {
+            taskList.innerHTML = '';
+            studyTasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <span>${task.task} (Added: ${task.date})</span>
+                    <button class="button delete-btn" onclick="deleteTask(${index})">Delete</button>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+
+        // Delete a task
+        function deleteTask(index) {
+            studyTasks.splice(index, 1);
+            localStorage.setItem('studyTasks', JSON.stringify(studyTasks));
+            renderTasks();
+        }
+    </script>
+</body>
+</html>
